@@ -42,7 +42,8 @@ async def create_categories(guild):
             elif isinstance(channel, discord.ForumChannel):
                 tags = []
                 for tag in channel.available_tags:
-                    tags.append({"name": tag.name, "emoji": tag.emoji, "moderated": tag.moderated})
+                    tags.append({"name": tag.name, "emoji": str(tag.emoji) if tag.emoji else None, "moderated": tag.moderated,
+                                 "url": tag.emoji.url if (tag.emoji and tag.emoji.is_custom_emoji()) else None})
                     
                 channels.append({"name": channel.name, "category_id": temp_category_id, "position": channel.position, "topic": channel.topic,
                                  "nsfw": channel.nsfw, "slowmode_delay": channel.slowmode_delay, "default_auto_archive_duration": channel.default_auto_archive_duration,
@@ -51,8 +52,7 @@ async def create_categories(guild):
                                  "default_thread_slowmode_delay": channel.default_thread_slowmode_delay,"default_layout": channel.default_layout})
             elif isinstance(channel, discord.StageChannel):
                 channels.append({"name": channel.name, "category_id": temp_category_id, "position": channel.position, "bitrate": channel.bitrate,
-                                 "nsfw": channel.nsfw, "slowmode_delay": channel.slowmode_delay, "default_auto_archive_duration": channel.default_auto_archive_duration,
-                                 "user_limit": channel.user_limit, "video_quality": channel.video_quality_mode})
+                                 "nsfw": channel.nsfw, "slowmode_delay": channel.slowmode_delay,"user_limit": channel.user_limit, "video_quality": channel.video_quality_mode})
     with open(JSON_FILE_NAME, 'w', encoding=JSON_ENCODING) as f:
         json.dump({"categories": categories, "channels": channels}, f, ensure_ascii=False, indent="\t")
     print("Successfully!")
